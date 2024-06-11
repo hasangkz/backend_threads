@@ -8,6 +8,7 @@ const {
   getPost,
   getUserPosts,
   replyToPost,
+  feedPosts,
 } = require('../controllers/postController');
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.delete('/:id', handleAuth, deletePost);
 router.put('/like/:id', handleAuth, likePost);
 router.put('/unlike/:id', handleAuth, unlikePost);
 router.put('/reply/:id', handleAuth, replyToPost);
+router.get('/feed', handleAuth, feedPosts);
 router.get('/user/:username', getUserPosts);
 router.get('/:id', getPost);
 
