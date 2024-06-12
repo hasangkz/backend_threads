@@ -35,7 +35,7 @@ const createPost = async (req, res) => {
 
     res.status(201).json(newPost);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in createPost => ', error);
   }
 };
@@ -57,7 +57,7 @@ const deletePost = async (req, res) => {
 
     res.status(200).json({ message: 'Post deleted succesfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in deletePost => ', error);
   }
 };
@@ -77,14 +77,14 @@ const likePost = async (req, res) => {
     const userLikedPost = post.likes.includes(userId);
 
     if (userLikedPost) {
-      res.status(400).json({ message: 'You have already liked this post!' });
+      res.status(400).json({ error: 'You have already liked this post!' });
     } else {
       post.likes.push(userId);
       await post.save();
       res.status(200).json({ message: 'Post liked successfully' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in likePost => ', error);
   }
 };
@@ -107,10 +107,10 @@ const unlikePost = async (req, res) => {
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       res.status(200).json({ message: 'Post unliked successfully' });
     } else {
-      res.status(200).json({ message: 'You did not have liked this post!' });
+      res.status(200).json({ error: 'You did not have liked this post!' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in unlikePost => ', error);
   }
 };
@@ -119,7 +119,7 @@ const unlikePost = async (req, res) => {
 const getUserPosts = async (req, res) => {
   try {
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in getUserPosts => ', error);
   }
 };
@@ -135,7 +135,7 @@ const getPost = async (req, res) => {
 
     res.status(200).json({ post });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in getPost => ', error);
   }
 };
@@ -166,7 +166,7 @@ const replyToPost = async (req, res) => {
 
     res.status(200).json(reply);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in replyToPost => ', error);
   }
 };
@@ -188,7 +188,7 @@ const feedPosts = async (req, res) => {
 
     res.status(200).json(feedPosts);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in feedPosts => ', error);
   }
 };

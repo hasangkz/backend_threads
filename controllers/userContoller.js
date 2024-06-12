@@ -31,10 +31,10 @@ const signupUser = async (req, res) => {
         email: newUser.email,
       });
     } else {
-      res.status(400).json({ message: 'Invalid user!' });
+      res.status(400).json({ error: 'Invalid user!' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log('Error in signup => ', error);
   }
 };
@@ -43,6 +43,12 @@ const signupUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    if (!username || !password)
+      return res
+        .status(400)
+        .json({ error: 'Please enter your username and password' });
+
     const user = await User.findOne({ username });
     const isPasswordCorrect = await bcrypt.compare(
       password,
@@ -104,7 +110,7 @@ const followUser = async (req, res) => {
     const isAlreadyFollowing = currentUser.following.includes(id);
 
     if (isAlreadyFollowing) {
-      res.status(400).json({ message: 'You already followed this user!' });
+      res.status(400).json({ error: 'You already followed this user!' });
     } else {
       await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
       await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
@@ -138,9 +144,7 @@ const unfollowUser = async (req, res) => {
       await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
       res.status(200).json({ message: 'User unfollowed successfully' });
     } else {
-      res
-        .status(400)
-        .json({ message: 'You are not follow this user already!' });
+      res.status(400).json({ error: 'You are not follow this user already!' });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -156,7 +160,7 @@ const updateUser = async (req, res) => {
   try {
     let user = User.findById(userId);
 
-    if (!user) return res.status(400).json({ message: 'User not found!' });
+    if (!user) return res.status(400).json({ error: 'User not found!' });
 
     if (req.params.id !== userId.toString())
       return res
