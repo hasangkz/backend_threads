@@ -187,7 +187,6 @@ const updateUser = async (req, res) => {
       const uploadedResponse = await cloudinary.uploader.upload(profilePic);
       profilePic = uploadedResponse.secure_url;
     }
-
     user.name = name || user.name;
     user.email = email || user.email;
     user.username = username || user.username;
@@ -195,6 +194,8 @@ const updateUser = async (req, res) => {
     user.profilePic = profilePic || user.profilePic;
 
     await user.save();
+
+    user.password = null;
 
     res.status(200).json({ message: 'Profile updated succesfully!', user });
   } catch (error) {

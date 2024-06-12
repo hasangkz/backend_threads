@@ -7,12 +7,6 @@ const userRoutes = require('./routes/userRoutes.js');
 const postRoutes = require('./routes/postRoutes.js');
 const cloudinary = require('cloudinary').v2;
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 const corsOptions = {
   origin: '*',
   credentials: true,
@@ -24,6 +18,12 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 const app = express();
 connect();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 //middlewares
 // app.use((req, res, next) => {
@@ -38,8 +38,8 @@ connect();
 //   next();
 // });
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
 //routes
