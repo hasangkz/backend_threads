@@ -9,9 +9,9 @@ const handleAuth = async (req, res, next) => {
 
     const decodedValue = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decodedValue.id).select('-password');
+    // const user = await User.findById(decodedValue.id).select('-password');
 
-    // const user = await User.findById(decodedValue.userId).select('-password');
+    const user = await User.findById(decodedValue.userId).select('-password');
 
     req.user = user;
 

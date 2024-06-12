@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/tokenProcess');
+const cloudinary = require('cloudinary').v2;
 
 // SIGNUP USER
 const signupUser = async (req, res) => {
@@ -28,7 +29,9 @@ const signupUser = async (req, res) => {
         _id: newUser._id,
         name: newUser.name,
         username: newUser.username,
+        bio: newUser.bio,
         email: newUser.email,
+        profilePic: newUser?.profilePic,
       });
     } else {
       res.status(400).json({ error: 'Invalid user!' });
@@ -71,7 +74,7 @@ const loginUser = async (req, res) => {
       email: user.email,
       username: user.username,
       bio: user.bio,
-      profilePic: user.profilePic,
+      profilePic: user?.profilePic,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -154,11 +157,12 @@ const unfollowUser = async (req, res) => {
 
 // UPDATE USER
 const updateUser = async (req, res) => {
-  const { name, email, username, password, bio, profilePic } = req.body;
+  let { name, email, username, password, bio, profilePic } = req.body;
+
   const userId = req.user._id;
 
   try {
-    let user = User.findById(userId);
+    let user = await User.findById(userId);
 
     if (!user) return res.status(400).json({ error: 'User not found!' });
 
@@ -170,7 +174,18 @@ const updateUser = async (req, res) => {
     if (password) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      user.password = password;
+      user.password = hashedPassword;
+    }
+
+    if (profilePic) {
+      if (user.profilePic) {
+        await cloudinary.uploader.destroy(
+          user.profilePic.split('/').pop().split('.')[0]
+        );
+      }
+
+      const uploadedResponse = await cloudinary.uploader.upload(profilePic);
+      profilePic = uploadedResponse.secure_url;
     }
 
     user.name = name || user.name;
@@ -179,7 +194,7 @@ const updateUser = async (req, res) => {
     user.bio = bio || user.bio;
     user.profilePic = profilePic || user.profilePic;
 
-    user = await user.save();
+    await user.save();
 
     res.status(200).json({ message: 'Profile updated succesfully!', user });
   } catch (error) {

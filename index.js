@@ -5,6 +5,13 @@ const connect = require('./db/connect.js');
 const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/userRoutes.js');
 const postRoutes = require('./routes/postRoutes.js');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const corsOptions = {
   origin: '*',
