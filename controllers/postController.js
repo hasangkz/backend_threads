@@ -49,7 +49,7 @@ const createPost = async (req, res) => {
 // DELETE POST
 const deletePost = async (req, res) => {
   try {
-    const post = Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id);
 
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
@@ -135,7 +135,7 @@ const getUserPosts = async (req, res) => {
       createdAt: -1,
     });
 
-    res.status(200).json(posts);
+    res.status(200).json({ posts });
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log('Error in getUserPosts => ', error);
@@ -194,6 +194,7 @@ const feedPosts = async (req, res) => {
   try {
     const userId = req.user._id;
     const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -204,7 +205,7 @@ const feedPosts = async (req, res) => {
       postedBy: { $in: followingUserIds },
     }).sort({ createdAt: -1 });
 
-    res.status(200).json(feedPosts);
+    res.status(200).json({ feedPosts });
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log('Error in feedPosts => ', error);

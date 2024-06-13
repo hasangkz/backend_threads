@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/tokenProcess');
 const cloudinary = require('cloudinary').v2;
+const mongoose = require('mongoose');
 
 // SIGNUP USER
 const signupUser = async (req, res) => {
@@ -96,8 +97,6 @@ const logoutUser = (req, res) => {
 // FOLLOW USER
 const followUser = async (req, res) => {
   try {
-    console.log('req', req);
-    console.log('req.user', req.user);
     const { id } = req.params;
 
     if (id === req.user._id.toString())
@@ -222,14 +221,51 @@ const freezeUser = async (req, res) => {
   }
 };
 
+// SUGGEST USER
+const getSuggestedUsers = async (req, res) => {
+  try {
+    // exclude the current user from suggested users array and exclude users that current user is already following
+    const userId = req.user._id;
+
+    const usersFollowedByYou = await User.findById(userId).select('following');
+
+    const users = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: userId },
+        },
+      },
+      {
+        $sample: { size: 10 },
+      },
+    ]);
+    const filteredUsers = users.filter(
+      (user) => !usersFollowedByYou.following.includes(user._id)
+    );
+    const suggestedUsers = filteredUsers.slice(0, 4);
+
+    suggestedUsers.forEach((user) => (user.password = null));
+
+    res.status(200).json({ suggestedUsers });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // GET USER PROFILE
 const getUserProfile = async (req, res) => {
-  const { username } = req.params;
+  const { query } = req.params;
   try {
-    const user = await User.findOne({ username }).select('-password');
-    if (!user) {
-      return res.status(400).json({ error: 'User not found' });
+    let user;
+
+    if (mongoose.Types.ObjectId.isValid(query)) {
+      user = await User.findOne({ _id: query }).select('-password');
+    } else {
+      // query is username
+      user = await User.findOne({ username: query }).select('-password');
     }
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     res.status(200).json({ user });
   } catch (error) {
@@ -242,6 +278,7 @@ module.exports = {
   signupUser,
   loginUser,
   logoutUser,
+  getSuggestedUsers,
   followUser,
   unfollowUser,
   updateUser,
