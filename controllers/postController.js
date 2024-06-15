@@ -59,6 +59,11 @@ const deletePost = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized to create post' });
     }
 
+    if (post.img) {
+      const imgId = post.img.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(imgId);
+    }
+
     await Post.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ message: 'Post deleted succesfully' });
@@ -145,7 +150,7 @@ const getUserPosts = async (req, res) => {
 // GET POST
 const getPost = async (req, res) => {
   try {
-    const post = Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id);
 
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
@@ -182,7 +187,7 @@ const replyToPost = async (req, res) => {
     post.replies.push(reply);
     await post.save();
 
-    res.status(200).json(reply);
+    res.status(200).json({ reply });
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log('Error in replyToPost => ', error);
