@@ -33,6 +33,8 @@ const signupUser = async (req, res) => {
         bio: newUser.bio,
         email: newUser.email,
         profilePic: newUser?.profilePic,
+        followers: user?.followers,
+        following: user?.following,
       });
     } else {
       res.status(400).json({ error: 'Invalid user!' });
@@ -76,6 +78,8 @@ const loginUser = async (req, res) => {
       username: user.username,
       bio: user.bio,
       profilePic: user?.profilePic,
+      followers: user?.followers,
+      following: user?.following,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -118,6 +122,21 @@ const followUser = async (req, res) => {
       await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
       res.status(200).json({ message: 'User followed successfully' });
     }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    console.log('Error in follow: ', err.message);
+  }
+};
+
+// GET USER
+const getUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) return res.status(400).json({ error: 'User not found!' });
+
+    res.status(200).json({ user });
   } catch (err) {
     res.status(500).json({ error: err.message });
     console.log('Error in follow: ', err.message);
@@ -291,6 +310,7 @@ module.exports = {
   getSuggestedUsers,
   followUser,
   unfollowUser,
+  getUser,
   updateUser,
   freezeUser,
   getUserProfile,

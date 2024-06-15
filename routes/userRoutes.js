@@ -9,12 +9,14 @@ const {
   freezeUser,
   getUserProfile,
   getSuggestedUsers,
+  getUser,
 } = require('../controllers/userContoller');
 const handleAuth = require('../middlewares/handleAuth');
 const router = express.Router();
 
 router.get('/profile/:query', getUserProfile);
 router.get('/suggest', handleAuth, getSuggestedUsers);
+router.get('/:id', handleAuth, getUser);
 router.post('/signup', signupUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
