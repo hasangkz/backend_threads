@@ -5,6 +5,7 @@ const connect = require('./db/connect.js');
 const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/userRoutes.js');
 const postRoutes = require('./routes/postRoutes.js');
+const messageRoutes = require('./routes/messageRoutes.js');
 const cloudinary = require('cloudinary').v2;
 
 const corsOptions = {
@@ -45,6 +46,7 @@ app.use(cookieParser());
 //routes
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/messages', messageRoutes);
 
 app.get('/', (req, res) => {
   return res.send('@hasangkz');
