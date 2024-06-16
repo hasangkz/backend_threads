@@ -1,7 +1,6 @@
 const Chat = require('../models/chatModel');
 const Message = require('../models/messageModel');
 const cloudinary = require('cloudinary').v2;
-// const { getRecipientSocketId } = require('../socket/socket');
 
 // SEND MESSAGE
 const sendMessage = async (req, res) => {
