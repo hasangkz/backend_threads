@@ -49,5 +49,5 @@ app.get('/', (req, res) => {
 });
 
 server.listen(PORT, () =>
-  console.log(`Socket server started at http://localhost:${PORT}`)
+  console.log(`Socket server started at ${PORT} PORT NUMBER`)
 );

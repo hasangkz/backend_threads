@@ -178,8 +178,6 @@ const unfollowUser = async (req, res) => {
 const updateUser = async (req, res) => {
   let { name, email, username, password, bio, profilePic } = req.body;
 
-  console.log('req', req);
-
   const userId = req.user._id;
 
   try {
