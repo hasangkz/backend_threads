@@ -16,7 +16,7 @@ const corsOptions = {
 };
 
 dotenv.config();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5004;
 connect();
 
 cloudinary.config({
